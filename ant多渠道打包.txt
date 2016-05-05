@@ -1,0 +1,64 @@
+使用命令android update project --target {target版本} --name {工程名字} --path {工程目录}
+如果项目有依赖关系，就在每个工程下都运行一遍该命令
+
+项目根目录有build.xml、local.properties、project.properties、ant.properties四个文件
+
+local.properties用于指定SDK位置
+ant.properties用于自定义build属性，可以指定代码路径、输出路径、签名、签名密码等
+
+ant.properties示例：
+key.store=android.keystore
+key.alias=android
+key.store.password=Cundong123456!@#
+key.alias.password=Cundong123456!@#
+market_channels=Wandoujia,360
+app_name=ZhihuPaper
+app_version=2.1
+
+说明： key.store为签名文件； key.alias为签名文件别名； key.store.password、key.alias.password为密码； market_channels为我们需要生成的所有渠道列表，使用“，”分开；app_name为生成apk的文件名； app_version为生成apk的版本号；
+
+
+修改build.xml让ant支持循环（需要ant-contrib插件）
+    <!-- 支持循环执行 -->  
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties" >  
+        <classpath>  
+           <pathelement location="${ant.dir}/lib/ant-contrib-1.0b3.jar" />  
+        </classpath>  
+    </taskdef>
+配置循环打包代码
+    <target name="deploy">   
+        <foreach target="edit_and_build" list="${market_channels}" param="channel" delimiter=",">   
+        </foreach>   
+    </target>  
+
+    <target name="edit_and_build">   
+        <echo>Run '${channel}' apk</echo>  
+
+        <replaceregexp
+            encoding="utf-8"
+            file="AndroidManifest.xml"
+            flags="s"
+            match='android:name="UMENG_CHANNEL".+android:value="([^"]+)"'
+            replace='android:name="UMENG_CHANNEL" android:value="${channel}"'/>
+
+        <property name="out.final.file"  location="${target.dir}/${app_version}/${app_name} V${app_version}(${channel}).apk" /> 
+        <antcall target="clean" />  
+        <antcall target="release" />  
+
+    </target>
+配置后，会读取ant.properties中market_channels中配置项，得到一个渠道号数组，对这个数据进行迭代，替换AndroidMainfext.xml文件中的android:name="UMENG_CHANNEL"。
+
+每替换好一个，将输出到"out.final.file"。
+
+${target.dir}，即为local.properties文件中配置的target.dir
+${app_name}，即为ant.properties文件中配置的app_name
+${app_version}，即为ant.properties文件中配置的app_version
+${channel}，即为当前循环的渠道号
+
+请务必保证${target.dir}/${app_version}目录真是存在并且有写权限
+
+
+测试打包
+ant debug
+发布
+ant release

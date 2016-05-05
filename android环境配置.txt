@@ -1,0 +1,11 @@
+打开~/.bash_profile文件
+向其中添加
+export ANDROID_SDK_ROOT=/Users/lrsxnn/workspace/android/android-sdk-macosx
+export ANDROID_NDK_ROOT=/Users/lrsxnn/workspace/android/android-ndk-r9d
+export ANDROID_HOME=${ANDROID_SDK_ROOT}
+
+export ANT_HOME=/Users/lrsxnn/workspace/android/apache-ant-1.9.7
+export PATH=$PATH:$ANDROID_SDK_ROOT:$ANDROID_SDK_ROOT/tools:$ANT_HOME/bin:
+
+保存并退出后
+运行source ~/.bash_profile命令
