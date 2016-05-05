@@ -1,0 +1,32 @@
+JNI是Java Native Interface的缩写，它提供了若干的API实现了Java和其他语言的通信（主要是C&C++）
+
+首先在java中定义带native声明的方法
+示例：HelloWorld.java
+
+package com.java.test
+public class HelloWorld {
+    static {
+        System.loadLibrary("Hello");
+    }
+
+    public native void DisplayHello();
+    
+    public static void main(String[] args) {
+        new HelloWorld().DisplayHello();
+    }
+}
+
+然后用javac编译类，javah生成头文件
+
+javac com/java/test/HelloWorld.java
+javah -jni com.java.test.HelloWorld
+
+编写C/C++文件来实现头文件中的方法
+
+生成动态链接库
+g++ -shared -I /Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/include -I /Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/include/darwin Hello.cpp -o libHello.so
+
+so文件命名必须是libxxx.so，xxx是loadLibrary中填写的字符
+
+执行代码
+java -Djava.library.path=. com.java.test.HelloWorld

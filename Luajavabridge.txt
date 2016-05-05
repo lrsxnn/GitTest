@@ -1,0 +1,68 @@
+Lua调用JAVA方法：
+
+	-- 回调函数
+	local function callback(result)
+	end
+
+	-- 调用 Java 方法需要的参数
+	local args = {
+	    "001",    -- billingIndex
+	    true,     -- useSms
+	    true,     -- isRepeated
+	    callback  -- luaFunctionId
+	}
+
+	-- 调用 Java 方法需要的参数的签名
+	local javaMethodSig = "(Ljava/lang/String;ZZI)Ljava/lang/String;"
+
+	-- Java 类的名称
+	local className = "com/qeeplay/frameworks/ChinaMobile_SDK"
+
+	-- Java 方法的名称
+	local javaMethodName = "showAlertDialog"
+
+
+	-- 调用 Java 方法
+	luaj.callStaticMethod(className, javaMethodName, args)
+
+
+	签名使用“(依次排列的参数类型)返回值类型”的格式，几个例子如下：
+
+	签名						解释
+	()V						参数：无，返回值：无
+	(I)V					参数：int，返回值：无
+	(Ljava/lang/String;)Z	参数：字符串，返回值：布尔值
+	(IF)Ljava/lang/String;	参数：整数、浮点数，返回值：字符串
+
+
+	类型名					类型
+	I						整数，或者 Lua function
+	F						浮点数
+	Z						布尔值
+	Ljava/lang/String;		字符串
+	V						Void 空，仅用于指定一个 Java 方法不返回任何值
+
+
+
+	luaj.callStaticMethod() 会返回两个值：
+
+	当成功时，第一个值为 true，第二个值是 Java 方法的返回值（如果有）。
+	当失败时，第一个值为 false，第二个值是错误代码。
+
+
+
+
+
+JAVA调用LUA方法：
+	调用引用 ID 指向的 Lua function，并传入一个字符串作为参数:
+	LuaJavaBridge.callLuaFunctionWithString(int luaFunctionId, String value)
+	
+	调用指定名字的 Lua 全局函数，并传入一个字符串作为参数:
+	LuaJavaBridge.callLuaGlobalFunctionWithString(int luaFunctionId, String value)
+
+	增加引用 ID 的计数，确保 Lua function 不会被 Lua 虚拟机自动回收:
+	LuaJavaBridge.retainLuaFunction(int luaFunctionId)
+
+	减少引用 ID 的计数，当计数等于 0 时，引用 ID 指向的 Lua function 将被回收:
+	LuaJavaBridge.releaseLuaFunction(int luaFunctionId)
+
