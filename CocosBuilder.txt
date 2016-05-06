@@ -1,0 +1,9 @@
+通过菜单File/Publish将制作好的场景ccb文件导出为ccbi文件以便cocos2d读取
+
+而cocos2d通过CCBReader来解析ccbi文件
+
+//加载场景
+CCScene* gameScene = [CCBReader sceneWithNodeGraphFromFile:@"GameScene.ccbi"];
+
+//跳转场景
+[[CCDirector sharedDirector] replaceScene:gameScene];

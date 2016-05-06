@@ -9,6 +9,8 @@ git status
 git diff <>
 添加文件到暂存区
 git add <>
+添加当前所有更改到暂存区
+git add .
 提交文件
 git commit -m ""
 删除文件
